@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 require './lib/server_runner'
+require './lib/path_finder'
 require 'faraday'
 require 'pry'
 
@@ -47,20 +48,27 @@ class HttpTest < Minitest::Test
     threads.each {|thread| thread.join}
   end
 
-  def test_accept_and_listen
-    skip
-  end
-
-  def test_analyze_request
-    skip
-  end
-
-  def test_output_decider
-    skip
-  end
-
-  def test_respond
-    skip
+  def test_path_finder_defaults
+    start_up(9299)
+    request_lines= ["GET / HTTP/1.1",
+    "Host: 127.0.0.1:9299",
+    "Connection: keep-alive",
+    "Cache-Control: max-age=0",
+    "Upgrade-Insecure-Requests: 1",
+    "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36",
+    "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "DNT: 1",
+    "Accept-Encoding: gzip, deflate, sdch, br",
+    "Accept-Language: en-US,en;q=0.8,de;q=0.6,es;q=0.4,it;q=0.2"]
+    path_finder_test = PathFinder.new(request_lines, server)
+    assert_equal "GET", path_finder_test.verb
+    assert_equal "/", path_finder_test.path
+    assert_equal "HTTP/1.1", path_finder_test.protocol
+    assert_equal "127.0.0.1", path_finder_test.host
+    assert_equal "9299", path_finder_test.port
+    assert_equal "127.0.0.1", path_finder_test.origin
+    assert_equal "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8", path_finder_test.accept
+    assert_instance_of Iterations, path_finder_test.server
   end
 
   def test_root_path
