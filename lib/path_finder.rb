@@ -1,4 +1,5 @@
 require './lib/word_game'
+require './lib/guessing_game'
 require 'pry'
 
 class PathFinder
@@ -31,6 +32,26 @@ class PathFinder
       ["Total Requests: #{server.request_counter}"]
     elsif path.include?("path?word=")
       WordGame.word_game(path.split("=")[1])
+    elsif path == "/start_game"
+      if server.game_object.game_status
+        ["Game has already been started!", server.game_object.determine_verb("GET", "")]
+      else
+        # start new game
+        server.game_object.game_status = true
+        ["Good luck!"]
+      end
+    elsif path == ("/game") && server.game_object.game_status
+      server.default_response_num = 301 if verb == "POST"
+      server.game_object.determine_verb(verb, server.guess)
+      # either making a guess, or getting information
+    elsif path.include?("/game?guess=") && server.game_object.game_status
+      # post man
+      server.default_response_num = 301 if verb == "POST"
+      server.game_object.determine_verb(verb, path.split("=")[1])
+    elsif (path == ("/game") && !server.game_object.game_status) || (path.include?("/game?guess=") && !server.game_object.game_status)
+      ["New game hasn't been started yet!"]
+    else
+      ["I don't know what you're trying to do!"]
     end
   end
 
