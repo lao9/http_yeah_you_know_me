@@ -14,7 +14,7 @@ class Iterations
     @body = ""
     @guess = ""
     @game_object = GuessingGame.new
-    @default_response_num = 200
+    @response_num = 200
   end
 
   def start
@@ -24,7 +24,6 @@ class Iterations
       @body = path_finder.output_decider
       check_game_status
       Response.new(@body, self).respond(default_response_num)
-      default_response_num = 200
       break if path_finder.path == "/shutdown" || $close == true
     end
   end
@@ -47,4 +46,4 @@ class Iterations
 
 end
 
-#åIterations.new(9292).start
+#Iterations.new(9292).start

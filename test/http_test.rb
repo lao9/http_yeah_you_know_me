@@ -33,7 +33,6 @@ class HttpTest < Minitest::Test
       $close = true
       assert_equal statement, html_clean_up(conn.post("/start_game", {}).body)
     end
-    #assert_equal "301", @server.response_code
     threads.each {|thread| thread.join}
   end
 
@@ -165,7 +164,7 @@ class HttpTest < Minitest::Test
     threads << Thread.new do
       $close = true
       assert_equal statement, html_clean_up(conn.post("/start_game").body)
-      #assert_equal "301", @server.response_code
+      assert_equal 301, server.default_response_num
     end
     threads.each {|thread| thread.join}
   end
@@ -175,7 +174,7 @@ class HttpTest < Minitest::Test
     post_game_start_up_threads
     statement = "No guesses have been made yet!"
     thread_setup(statement, "/game")
-    #assert 200 message
+    assert_equal 200, server.default_response_num
   end
 
   def test_guesses_unit_test
@@ -190,24 +189,24 @@ class HttpTest < Minitest::Test
   def test_make_guesses_and_request_guess_history
     start_up(9302)
     post_game_start_up_threads
+    assert_equal 301, server.default_response_num
     statement = "Your guess was too low.\n1 guess has been made.\nGuess #1 was 1, and it was too low."
     threads = []
     threads << Thread.new{server.start}
     threads << Thread.new do
       $close = true
       assert_equal statement, html_clean_up(conn.post("/game", {guess: 1}).body)
+      assert_equal 301, server.default_response_num
     end
-    #assert_equal "301", @server.response_code
     threads.each {|thread| thread.join}
-    #assert 200 message
     statement2 = "Your guess was too high.\n2 guesses have been made.\nGuess #1 was 1, and it was too low.\nGuess #2 was 100, and it was too high."
     threads = []
     threads << Thread.new{server.start}
     threads << Thread.new do
       $close = true
       assert_equal statement2, html_clean_up(conn.post("/game", {guess: 100}).body)
+      assert_equal 301, server.default_response_num
     end
-    #assert_equal "301", @server.response_code
     threads.each {|thread| thread.join}
   end
 
@@ -222,7 +221,6 @@ class HttpTest < Minitest::Test
       $close = true
       assert_equal statement, html_clean_up(conn.post("/game", {guess: answer1}).body)
     end
-    #assert_equal "301", @server.response_code
     threads.each {|thread| thread.join}
     statement = "New game hasn't been started yet!"
     threads = []
@@ -231,7 +229,6 @@ class HttpTest < Minitest::Test
       $close = true
       assert_equal statement, html_clean_up(conn.post("/game", {guess: answer1}).body)
     end
-    #assert_equal "301", @server.response_code
     threads.each {|thread| thread.join}
     post_game_start_up_threads
     answer2 = server.game_object.secret_number
@@ -242,7 +239,6 @@ class HttpTest < Minitest::Test
       $close = true
       assert_equal statement, html_clean_up(conn.post("/game", {guess: answer2}).body)
     end
-    #assert_equal "301", @server.response_code
     threads.each {|thread| thread.join}
     refute_equal answer2, answer1
   end
@@ -257,28 +253,28 @@ class HttpTest < Minitest::Test
       $close = true
       assert_equal statement, html_clean_up(conn.post("/game", {guess: 1}).body)
     end
-    #assert_equal "301", @server.response_code
     threads.each {|thread| thread.join}
-    #assert 403 Forbidden Error
     statement = "Game has already been started!\n1 guess has been made.\nGuess #1 was 1, and it was too low."
     threads = []
     threads << Thread.new{server.start}
     threads << Thread.new do
       $close = true
       assert_equal statement, html_clean_up(conn.post("/start_game", {}).body)
+      assert_equal 403, server.default_response_num
     end
-    #assert_equal "301", @server.response_code
     threads.each {|thread| thread.join}
   end
 
   def test_unknown_path_error
-    skip
-    # assert 404 Not Found
+    start_up(9305)
+    thread_setup("I don't know what you're trying to do!", "/fofamalou")
+    assert_equal 404, server.default_response_num
   end
 
   def test_forced_error
-    skip
-    # asert 500 error
+    start_up(9306)
+    thread_setup("SystemError", "/force_error")
+    assert_equal 500, server.default_response_num
   end
 
  end

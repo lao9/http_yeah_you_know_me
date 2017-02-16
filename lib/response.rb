@@ -33,6 +33,38 @@ class Response
     "content-length: #{output.length}\r\n\r\n"].join("\r\n")
   end
 
+  def headers_401
+    ["http/1.1 401 Unauthorized",
+    "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+    "server: ruby",
+    "content-type: text/html; charset=iso-8859-1",
+    "content-length: #{output.length}\r\n\r\n"].join("\r\n")
+  end
+
+  def headers_403
+    ["http/1.1 403 Forbidden",
+    "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+    "server: ruby",
+    "content-type: text/html; charset=iso-8859-1",
+    "content-length: #{output.length}\r\n\r\n"].join("\r\n")
+  end
+
+  def headers_404
+    ["http/1.1 404 Not Found",
+    "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+    "server: ruby",
+    "content-type: text/html; charset=iso-8859-1",
+    "content-length: #{output.length}\r\n\r\n"].join("\r\n")
+  end
+
+  def headers_500
+    ["http/1.1 500 Internal Server Error",
+    "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+    "server: ruby",
+    "content-type: text/html; charset=iso-8859-1",
+    "content-length: #{output.length}\r\n\r\n"].join("\r\n")
+  end
+
 # "Location: http://127.0.0.1:" + server.port.to_s + "/game"
 # "Location: http:google.com"
 
