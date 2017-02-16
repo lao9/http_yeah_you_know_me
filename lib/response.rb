@@ -10,8 +10,16 @@ class Response
   def respond(response_num)
     if response_num == 200
       server.client.puts headers_200
-    else response_num == 301
+    elsif response_num == 301
       server.client.puts headers_301
+    elsif response_num == 401
+      server.client.puts headers_401
+    elsif response_num == 403
+      server.client.puts headers_403
+    elsif response_num == 404
+      server.client.puts headers_404
+    elsif response_num == 500
+server.client.puts headers_500
     end
     server.client.puts output
     server.client.close
